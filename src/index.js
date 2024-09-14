@@ -1,8 +1,14 @@
 const isCpfValid = (cpf) => {
-  // Remove non-digit characters
   const cleanedCpf = cpf.replace(/\D/g, "");
-
   if (cleanedCpf.length !== 11) {
+    return false;
+  }
+  return true;
+};
+
+const isCnpjValid = (cnpj) => {
+  const cleanedCnpj = cnpj.replace(/\D/g, "");
+  if (cleanedCnpj.length !== 14) {
     return false;
   }
   return true;
@@ -10,4 +16,5 @@ const isCpfValid = (cpf) => {
 
 module.exports = {
   isCpfValid,
+  isCnpjValid,
 };
