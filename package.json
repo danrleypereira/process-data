@@ -1,0 +1,15 @@
+{
+  "name": "process-data",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "git@github.com:danrleypereira/process-data.git",
+  "author": "Danrley Pereira <danrleywillian@gmail.com>",
+  "license": "MIT",
+  "type": "commonjs",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
