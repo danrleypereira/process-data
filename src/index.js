@@ -13,7 +13,7 @@ const isCpfValid = (cpf) => {
 
 const isVerificationDigitsValid = (cpf, verificationDigits) => {
   const firstDigit = calculateFirstDigit(cpf);
-  const secondDigit = calculateSecondDigit(cpf);
+  const secondDigit = calculateSecondDigit(cpf, firstDigit);
 
   return `${firstDigit}${secondDigit}` === verificationDigits;
 };
@@ -31,9 +31,9 @@ const calculateFirstDigit = (cpf) => {
   return resto < 2 ? 0 : 11 - resto;
 };
 
-const calculateSecondDigit = (cpf) => {
+const calculateSecondDigit = (cpf, firstDigit = undefined) => {
   const cpfArray = cpf.slice(0, 9).split("").map(Number);
-  cpfArray.push(calculateFirstDigit(cpf));
+  cpfArray.push(firstDigit || calculateFirstDigit(cpf));
 
   const multiplicadores = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
 
