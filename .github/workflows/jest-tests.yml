@@ -1,0 +1,35 @@
+name: Run Jest Tests on PR
+
+# This workflow runs whenever a pull request is opened or updated
+on:
+  pull_request:
+    branches:
+      - main # Replace 'main' with your default branch name if different
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Jest tests
+        run: npm run test
+
+      # Upload Jest test results (optional)
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: ./coverage/
+          if-no-files-found: error
