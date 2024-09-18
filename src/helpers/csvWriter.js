@@ -36,4 +36,5 @@ export const saveProcessedCsv = (dataArray, outputFile) => {
   const csv = parse(processedData);
 
   fs.writeFileSync(outputFile, csv);
+  return processedData;
 };
