@@ -1,58 +1,62 @@
 import express from "express";
 import multer from "multer";
-import { processCsvToArray } from "./helpers/csvProcessor.js";
-import { saveProcessedCsv } from "./helpers/csvWriter.js";
+import { JOB_QUEUE, setUpWorker } from "./workFlow/index.js";
+import {fileURLToPath, pathToFileURL} from "url";
 
 const app = express();
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: 'uploads/' });
 
-let cachedData = null;
-let lastUploadTimestamp = null;
+// Inicia o Worker
+setUpWorker();
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  next();
-});
 
-const paginate = (array, page, limit) => {
-  const start = (page - 1) * limit;
-  const end = page * limit;
-  return array.slice(start, end);
-};
-
-app.post("/upload", upload.single("csv"), async (req, res) => {
+// Rota para upload de CSV e adição à fila de processamento
+app.post('/upload', upload.single('csv'), async (req, res) => {
   try {
-    console.log('oi')
-    if (req.file || !cachedData) {
-      const filePath = req.file ? req.file.path : null;
-
-      if (!cachedData || lastUploadTimestamp !== req.file.filename) {
-        console.log(filePath)
-        const data = await processCsvToArray(filePath);
-        lastUploadTimestamp = req.file.filename;
-
-        cachedData = saveProcessedCsv(data, "processed_results.csv");
-      }
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    // Definindo os atributos de job
+    const fileUrl = pathToFileURL(req.file.path).href;
+    const userName = req.body.userName || 'defaultUser';
+    const totalRows = req.body.totalRows ? parseInt(req.body.totalRows, 10) : 0;
 
-    const paginatedData = paginate(cachedData, page, limit);
-    const totalPages = Math.ceil(cachedData.length / limit);
+    const outputFilePath = `processed_results_${Date.now()}.csv`;
+
+    // Adiciona o trabalho à fila
+    const job = await JOB_QUEUE.add('csv-process', {
+      csvFileUrl: fileUrl,
+      outputFilePath: outputFilePath,
+      userName: userName,
+      totalRows: totalRows,
+    });
+
+    // Aguarda o trabalho ser concluído e obtém os dados processados como JSON
+    const jsonData = await job.waitUntilFinished(JOB_QUEUE.client);
 
     res.json({
-      results: paginatedData,
-      page,
-      totalPages,
-      totalResults: cachedData.length,
+      message: 'File uploaded and processing completed',
+      jobId: job.id,
+      data: jsonData, // Retorno dos dados em JSON
+      outputFilePath: outputFilePath,
     });
   } catch (error) {
-    console.log(error)
-    res.status(500).send("Error processing file");
+    console.error('Error adding job to queue:', error);
+    res.status(500).send('Error processing file');
   }
 });
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+// Função para paginar os dados
+function paginate(data, page, limit) {
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  return data.slice(startIndex, endIndex);
+}
+
+
+// Inicia o servidor
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
