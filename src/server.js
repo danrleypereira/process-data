@@ -22,10 +22,12 @@ const paginate = (array, page, limit) => {
 
 app.post("/upload", upload.single("csv"), async (req, res) => {
   try {
+    console.log('oi')
     if (req.file || !cachedData) {
       const filePath = req.file ? req.file.path : null;
 
       if (!cachedData || lastUploadTimestamp !== req.file.filename) {
+        console.log(filePath)
         const data = await processCsvToArray(filePath);
         lastUploadTimestamp = req.file.filename;
 
@@ -46,6 +48,7 @@ app.post("/upload", upload.single("csv"), async (req, res) => {
       totalResults: cachedData.length,
     });
   } catch (error) {
+    console.log(error)
     res.status(500).send("Error processing file");
   }
 });
