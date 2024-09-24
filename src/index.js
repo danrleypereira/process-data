@@ -39,10 +39,10 @@ function onData(data) {
     vlMultaBRL: formatToBRL(data.vlMulta),
     vlAtualBRL: formatToBRL(data.vlAtual),
   };
-  const jsonData = JSON.stringify(data);
+  const jsonData = JSON.stringify(processedData);
   outputJSONStream.write(jsonData);
 
-  const csvLine = Object.values(data).join(",") + "\n";
+  const csvLine = Object.values(processedData).join(",") + "\n";
   outputCSVSream.write(csvLine);
 }
 

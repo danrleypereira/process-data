@@ -1,107 +1,64 @@
-import pkg, {startsWith} from 'yarn/lib/cli.js';
-const { stringify } = pkg;
-
 import fs from 'fs';
-import parse from "csv-parser";
-import { promisify } from 'util';
-import { fileURLToPath, pathToFileURL } from 'url';
-
-import { CONNECTOR as redisClient } from './config.js';
+import axios from 'axios';
+import { processCsvFromStream } from "../helpers/csvProcessor.js";
 import { isCpfValid, isCnpjValid, validatePayments } from "../validators/index.js";
 import { formatToBRL } from "../helpers/currencyConverter.js";
+import { PassThrough } from 'stream';
 
-const sleep = promisify(setTimeout);
-
-const fileName = 'employment_indicators.json';
-
-// Remove o arquivo existente para um novo processamento
-if (fs.existsSync(fileName)) {
-    fs.unlinkSync(fileName);
-}
+const outputJSONStream = fs.createWriteStream("processed_data.json", { flags: "a" });
+const outputCSVSream = fs.createWriteStream("processed_data.csv", { flags: "a" });
 
 export const jobProcessor = async (job) => {
     await job.log(`Started processing job with id ${job.id}`);
+    await job.updateProgress(15);
 
-    // Processa o CSV
-    const jsonData = await processCSVStream(job.data);
-
-    await job.updateProgress(100);
-    return jsonData;
-};
-
-
-const processCSVStream = async (jobData) => {
     try {
-        let processedCount = 0;
-        let processedDataArray = []; // Para armazenar os dados processados
+        // Fetch CSV file from the server using the file URI provided in the job data
+        const response = await axios.get(job.data.fileUri, { responseType: 'stream' });
 
-        // Criar stream de escrita para o CSV de saída
-        const outputStream = fs.createWriteStream(jobData.outputFilePath);
-        const csvStringify = stringify({ header: true }); // Adiciona cabeçalho ao CSV
+        // Create a PassThrough stream to process the axios response stream
+        const csvStream = new PassThrough();
+        response.data.pipe(csvStream);
 
-        // Pipe de stringificação para o arquivo de saída
-        csvStringify.pipe(outputStream);
+        // Process the CSV stream using your custom processCsvInStream function
+        const jsonData = await processCsvFromStream(csvStream, onData, onEnd, onError);
 
-        // Cria stream de leitura do CSV de entrada e processa linha a linha
-        const stream = fs.createReadStream(jobData.csvFileUrl)
-            .pipe(
-                parse({
-                    columns: true, // Interpreta cada linha como um objeto com base no cabeçalho do CSV
-                })
-            )
-            .on('data', async (data) => {
-                // Simulação de processamento complexo
-                await sleep(10);
-
-                // Processa cada linha do CSV
-                const processedData = processCSVRow(data);
-
-                // Armazena a linha processada no Redis e no array
-                await redisClient.rpush(`job:${jobData.jobId}:data`, JSON.stringify(processedData));
-                processedDataArray.push(processedData);
-
-                // Escreve a linha processada no CSV de saída
-                csvStringify.write(processedData);
-
-                processedCount++;
-                if (processedCount % 100 === 0) {
-                    await redisClient.set(`job:${jobData.jobId}:progress`, (processedCount / jobData.totalRows) * 100);
-                }
-            })
-            .on('error', (error) => {
-                console.error('Erro ao processar o CSV em streaming: ', error);
-            })
-            .on('end', () => {
-                console.log('Processamento do CSV com streaming completo.');
-                csvStringify.end(); // Finaliza o stringifier do CSV de saída
-            });
-
-        // Aguarda o término do stream
-        await new Promise((resolve) => stream.on('end', resolve));
-
-        // Cacheia o total de linhas processadas
-        await redisClient.set(`job:${jobData.jobId}:processedCount`, processedCount);
-        console.log(`Processamento de ${processedCount} linhas CSV finalizado.`);
-
-        // Retorna os dados processados como JSON
-        return processedDataArray;
+        await job.updateProgress(100);
+        return { data: jsonData, websocketUrl: job.data.websocketUrl };
     } catch (error) {
-        console.error('Erro durante o processamento em streaming: ', error);
+        console.error(`Error processing job with id ${job.id}:`, error);
+        await job.log(`Error processing job with id ${job.id}: ${error.message}`);
+        throw error; // Ensure the job fails properly if there's an error
     }
 };
 
-const processCSVRow = (data) => {
-    const isValidCpfOrCNPJ = isCpfValid(data.nrCpfCnpj) || isCnpjValid(data.nrCpfCnpj);
-    const isPaymentValid = validatePayments(data).isValid;
-
-    return {
+// Define the processing functions for each row and stream end/error events
+function onData(data) {
+    const processedData = {
         ...data,
-        isValidCpfOrCNPJ,
-        isPaymentValid,
+        isValidCpfOrCNPJ: isCpfValid(data.nrCpfCnpj) || isCnpjValid(data.nrCpfCnpj),
+        isPaymentValid: validatePayments(data).isValid,
         vlTotalBRL: formatToBRL(data.vlTotal),
         vlPrestaBRL: formatToBRL(data.vlPresta),
         vlMoraBRL: formatToBRL(data.vlMora),
         vlMultaBRL: formatToBRL(data.vlMulta),
         vlAtualBRL: formatToBRL(data.vlAtual),
     };
-};
+    const jsonData = JSON.stringify(processedData);
+    outputJSONStream.write(jsonData);
+
+    const csvLine = Object.values(processedData).join(",") + "\n";
+    outputCSVSream.write(csvLine);
+}
+
+function onEnd() {
+    outputJSONStream.end();
+    outputCSVSream.end();
+    console.log("CSV and JSON processing completed successfully!");
+}
+
+function onError(error) {
+    console.error("Error processing CSV:", error);
+    outputJSONStream.end();
+    outputCSVSream.end();
+}

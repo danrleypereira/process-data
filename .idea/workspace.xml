@@ -5,13 +5,35 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa6cfdfc-af9b-4c4a-8797-af2bd8b85c63" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/workFlow/config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/workFlow/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/workFlow/processor.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/workFlow/worker.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/processed_data.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/processed_data.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/processed_results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/processed_results_1727122580117.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/helpers/csvProcessor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/helpers/csvProcessor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/worker.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/workFlow/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/workFlow/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/workFlow/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/workFlow/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/workFlow/processor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/workFlow/processor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/workFlow/worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/workFlow/worker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/3a1adaf9b969bfef49b58d717c53dd1f" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/3bbbb77e45a6b25fe077861b7e661296" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/4251a37f2c99b192dbd59a67269fcdf0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/461a976c280fcd438d85a380a5551a49" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/5c33901d5e4d3aacc71c784bd0972a54" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/6bb4d7d2cd9d1dcd30c11500d8ef4a93" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/7fc7765ab9bdd526b82a8b88f32a315e" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/8f6f19115360eef63314e4fffabd6421" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/ab70014d80fa649e5ff4f34aa191963c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/b74b66fb26425e452136856a67dc03fa" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/ca8d498a3f164518dfa1b433db2855c4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/d159e94326d0c25f8588260595fd1e36" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/d54afad30b2a000a92968f1a9ee0e4c9" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/d88e32ecf79168e86d0b56d841387b1d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/f7f47cfaca1a0c561a694943ab7e8a88" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +66,9 @@
     "Jest.CSV readCsvInStreaming.executor": "Run",
     "Jest.JSON Converter.executor": "Run",
     "Jest.l.executor": "Run",
+    "Node.js.index.js.executor": "Run",
+    "Node.js.server.js.executor": "Run",
+    "Node.js.worker.js.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "feature/process-huge-files",
     "javascript.nodejs.core.library.configured.version": "16.20.2",
@@ -65,7 +90,7 @@
       <recent name="C:\workspace\process-data\src\bullmq" />
     </key>
   </component>
-  <component name="RunManager" selected="Docker.docker-compose.yml: Compose Deployment">
+  <component name="RunManager">
     <configuration name="CSV Writer" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -159,7 +184,8 @@
       <workItem from="1726856173288" duration="10053000" />
       <workItem from="1726975846603" duration="677000" />
       <workItem from="1727061282327" duration="3013000" />
-      <workItem from="1727096415276" duration="19112000" />
+      <workItem from="1727096415276" duration="20211000" />
+      <workItem from="1727133350731" duration="19127000" />
     </task>
     <servers />
   </component>
@@ -176,5 +202,23 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/server.js</url>
+          <line>11</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/server.js</url>
+          <line>14</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

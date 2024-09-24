@@ -18,10 +18,20 @@ export const processCsvToArray = (filePath) => {
 
 // this function is used to process the CSV file in a stream
 // this is recommended for large files, as it doesn't load the entire file into memory
-export const processCsvInStream = (filePath, onData, onEnd, onError) => {
+export const processCsvInStream = async (filePath, onData, onEnd, onError) => {
   fs.createReadStream(filePath)
     .pipe(csvParser())
     .on("data", onData)
     .on("end", onEnd)
     .on("error", onError);
+};
+
+// this function is used to process stream from processor (server request)
+// this is a direct pipe from server response
+export const processCsvFromStream = async (stream, onData, onEnd, onError) => {
+  stream
+      .pipe(csv())
+      .on("data", onData)
+      .on("end", onEnd)
+      .on("error", onError);
 };

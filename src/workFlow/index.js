@@ -5,3 +5,6 @@ import setUpWorker from './worker.js';
 import { jobProcessor } from './processor.js';
 
 export { CONNECTOR, JOB_QUEUE, setUpWorker, jobProcessor};
+
+// Initialize the Worker
+await setUpWorker();
